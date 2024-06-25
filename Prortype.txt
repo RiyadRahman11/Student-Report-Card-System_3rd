@@ -1,0 +1,924 @@
+﻿Important Function with Short notes:
+
+1/
+This function is used for clearing input stream.
+Function:
+void clear_input_buffer() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+
+
+
+2/This function updates the current color.
+Function:
+void Colour(int color)
+{
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+
+3/This sets the current_cursor by using the x and y coordinates.
+void gotoxy(int x, int y)
+{
+    COORD c;
+    c.X = x;
+    c.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+
+4/This function sets the arrow to it’s desired position.
+void arrowF(int realPosition, int arrowPosition)
+{
+    if (realPosition == arrowPosition)
+    {
+        Colour(12);
+        cout << "==> ";
+    }
+    else
+    {
+        Colour(3);
+        cout << "    ";
+    }
+}
+
+
+5/This function updates the id for the upcoming students in a correct order.
+void updatelastid()
+{
+    ifstream infile;
+    infile.open("sid.txt");
+    if (infile.is_open())
+    {
+        int id;
+        while (infile >> id)
+        {
+            lastid = max(lastid, id);
+        }
+        infile.close();
+    }
+}
+
+
+6/This function shows the Welcome Menu screen.
+int WELCOME()
+{
+    system("cls");
+    int pos = 1;
+    int keyP = 0;
+    while (keyP != ENTER)
+    {
+        int headerX = borderX + borderWidth / 2 - 10;
+        Colour(5);
+        gotoxy(headerX, borderY + 1);
+        printf("*******        ******");
+        gotoxy(headerX, borderY + 2);
+        printf("******   HOME  *****");
+        gotoxy(headerX, borderY + 3);
+        printf("******         ******");
+
+
+        gotoxy(menuX, menuY + 2);
+        Colour(3);
+        arrowF(1, pos);
+        printf("About");
+
+
+        gotoxy(menuX, menuY + 4);
+        Colour(3);
+        arrowF(2, pos);
+        printf("Student");
+
+
+        gotoxy(menuX, menuY + 6);
+        Colour(3);
+        arrowF(3, pos);
+        printf("Course");
+
+
+        gotoxy(menuX, menuY + 8);
+        Colour(3);
+        arrowF(4, pos);
+        printf("Admin");
+
+
+        gotoxy(menuX, menuY + 10);
+        Colour(3);
+        arrowF(5, pos);
+        printf("Credits");
+
+
+        gotoxy(menuX, menuY + 12);
+        Colour(3);
+        arrowF(6, pos);
+        printf("Exit");
+
+
+        keyP = _getch();
+        if (keyP == DOWN)
+        {
+            if (pos == 6)
+                pos = 1;
+            else
+                pos++;
+        }
+        else if (keyP == UP)
+        {
+            if (pos == 1)
+                pos = 6;
+            else
+                pos--;
+        }
+    }
+
+
+    system("cls");
+    return pos;
+}
+
+
+
+
+7/This shows the Student Registration Menu
+int StuReg()
+{
+    system("cls");
+    int pos = 1;
+    int keyP = 0;
+    while (keyP != ENTER)
+    {
+        int headerX = borderX + borderWidth / 2 - 10;
+        Colour(5);
+        gotoxy(headerX, borderY + 1);
+        printf("*******        ******");
+        gotoxy(headerX, borderY + 2);
+        printf("******   HOME  *****");
+        gotoxy(headerX, borderY + 3);
+        printf("******         ******");
+
+
+        gotoxy(menuX, menuY + 2);
+        Colour(3);
+        arrowF(1, pos);
+        printf("Register");
+
+
+        gotoxy(menuX, menuY + 4);
+        Colour(3);
+        arrowF(2, pos);
+        printf("Login");
+
+
+        gotoxy(menuX, menuY + 6);
+        Colour(3);
+        arrowF(3, pos);
+        printf("Exit");
+
+
+        keyP = _getch();
+        if (keyP == DOWN)
+        {
+            if (pos == 3)
+                pos = 1;
+            else
+                pos++;
+        }
+        else if (keyP == UP)
+        {
+            if (pos == 1)
+                pos = 3;
+            else
+                pos--;
+        }
+    }
+    _getch();
+    system("cls");
+    return pos;
+}
+
+
+
+
+8/This functions runs the constant loop to showcase the student Registration menu
+void studentM()
+{
+    int x;
+    do
+    {
+        x = StuReg();
+        if (x == 1)
+            SReg();
+        else if (x == 2)
+            LogS();
+    } while (x != 3);
+}
+
+
+9/This updates the data for student in file 
+void write_to_f(STUDENTS temp)
+{
+    ofstream outfile, outid;
+    outfile.open("studentA.txt", ios::app);
+    outid.open("sid.txt", ios::app);
+    outfile<<temp.sid << " " << temp.spass << " " << temp.marks << " " << temp.cgpa << " " << temp.name<<endl;
+    outid << temp.sid<<endl;
+    outfile.close();
+    outid.close();
+}
+
+
+10/ This function is for student registration
+void SReg() {
+    updatelastid();
+
+
+    int id = lastid + 1;
+    STUDENTS temp;
+    temp.marks = 0;
+    temp.cgpa = 0;
+    temp.sid = id;
+    clear_input_buffer();
+    cout << "Enter your Full Name: ";
+    string nm;
+    getline(cin, nm);
+    cout << "Set a password: ";
+    string pass;
+    cin >> pass;
+    clear_input_buffer();
+    temp.name = nm;
+    temp.spass = pass;
+    write_to_f(temp);
+    stu_hash[id] = temp;
+    int counter=0;
+    cout << "Your registration is completed" << endl;
+    cout << "Your Student ID is: " << id << endl;
+    if (course.size() == 0) return;
+    cout << course.size()<<" ·"<<"You may now select your courses:" << endl << endl;
+    for (auto& u : course)
+    {
+        cout << u.cid << " " << u.name << endl;
+    }
+    cout<<"Enter the course ids using spaces :"<<endl;
+    string sC;
+    getline(cin,sC);
+    vector<int>ids=toIntV(sC);
+    for(int i=0;i<ids.size();i++)
+    {
+
+
+            COURSE u=course_hash[ids[i]];
+            cout<<u.name<<endl;
+            u.marks = -1;
+            u.cgpa = -1;
+            ofstream stufile, csfile;
+            string stName = to_string(id) + ".txt";
+            string csName = "CSE" + to_string(u.cid) + ".txt";
+            stufile.open(stName, ios::app);
+            csfile.open(csName, ios::app);
+            stufile << u.cid << " " << u.marks<<endl;
+            csfile<<id<<endl;
+            stufile.close();
+            csfile.close();
+            temp.stcourse.push_back(u);
+            u.stc.push_back(temp);
+    }
+    mergesort(temp.stcourse);
+  }
+
+
+11/ This function reades from the file for the student data
+void get_stu()
+{
+    ifstream infile;
+    infile.open("studentA.txt");
+    if (infile.is_open())
+    {
+        STUDENTS temp;
+        stu.clear();
+        while (true)
+        {
+            STUDENTS temp;
+            if (!(infile >> temp.sid >> temp.spass >> temp.marks >> temp.cgpa))
+                break;
+            infile.ignore();
+            getline(infile, temp.name);
+
+
+
+
+            ifstream pqfile;
+            string stfile = to_string(temp.sid) + ".txt";
+            pqfile.open(stfile);
+            if (pqfile.is_open())
+            {
+                int k=0;
+                COURSE u;
+                while (pqfile >> u.cid >> u.marks)
+                {
+                    COURSE ct=course_hash[u.cid];
+                    temp.stcourse.push_back(u);
+
+
+
+
+
+
+                }
+
+
+            }
+              pqfile.close();
+            stu_hash[temp.sid] = temp;
+            stu.push_back(temp);
+        }
+
+
+    }
+
+
+     infile.close();
+
+
+     for(int i=0;i<stu.size();i++)
+     {
+
+
+         for(int j=0;j<stu[i].stcourse.size();j++)
+         {
+            //stu[i].stcourse[j].tree.Binsert(stu[i].stcourse[j].marks);
+            //stu[i].stcourse[j].pq.insert(stu[i].sid,stu[i].stcourse[j].marks);
+            //cout<<"Course :"<<stu[i].stcourse[j].cid<<" "<<stu[i].stcourse[j].marks<<endl;
+            //cout<<stu[i].stcourse[j].pq.returnsize()<<endl<<endl;
+         }
+     }
+    //_getch();
+}
+
+
+
+
+12/ This function shows the student profile
+void StuP(int id)
+{
+    get_stu();
+    STUDENTS temp =stu_hash[id];
+    cout<<id<<endl;
+    cout<<temp.name<<endl;
+    cout<<"Number of course taken :"<<temp.stcourse.size()<<endl;
+     _getch();
+}
+
+
+13/This function shows the selected course for students
+void StuSC(int id)
+{
+    get_stu();
+    STUDENTS temp = stu_hash[id];
+    cout << "Selected Courses:" << " "<<id<<endl;
+    for (auto u : temp.stcourse)
+    {
+        COURSE c=course_hash[u.cid];
+        cout << u.cid << " ";
+        if(u.marks==-1)cout<<"N/A"<<endl;
+        else
+        cout<<u.marks<<endl;
+    }
+
+
+    _getch();
+}
+
+
+
+
+14/This function shows Rank of a student for each courses
+void StuRank(int id)
+{
+    STUDENTS temp = stu_hash[id];
+    for(auto c:temp.stcourse)
+    {
+        COURSE u=course_hash[c.cid];
+        if(u.marks==-1)
+        {
+            cout<<"Marks not updated yet"<<endl;
+        }
+        else cout<<"Course"<< u.name<<" "<<u.cid<<" "<<"Current Rank : "<<Rank(u.cid,id)<<endl;
+    }
+    _getch();
+}
+
+
+15/This function shows the report card
+void StuReport(int id)
+{
+    STUDENTS u=stu_hash[id];
+    vector<COURSE>AC;
+    for(auto courses:u.stcourse)
+    {
+        AC.push_back(courses);
+    }
+    int total_cs=AC.size();
+    int sum=0;
+    double cgpa= weight_avg(AC);
+    for(auto c:AC)
+    {
+        sum+=c.marks;
+
+
+    }
+    cout<<u.name<<endl<<u.sid<<endl<<endl;
+    cout<<"Report Card : "<<endl<<endl;
+    cout<<"Marks | "<<"GPA | "<<"Grade | "<<"Rank | "<<endl;
+    for(auto c:AC)
+    {
+        COURSE temp;
+        temp=course_hash[c.cid];
+        cout<<c.cid<<" "<<temp.name<<" "<<temp.credit<<" ";
+        if(c.marks==-1)cout<<"N/A"<<" "<<"N/A"<<"N/A"<<"N/A"<<endl;
+        else
+        cout<<c.marks<<" "<<gpa(c.marks)<<" "<<grade(c.marks)<<" "<<Rank(c.cid,id)<<endl;
+    }
+    cout<<endl;
+
+
+    if(sum<0)
+    {
+    cout<<"Total marks :"<<"N/A"<<endl;
+    cout<<"Current CGPA :"<<"N/A"<<endl;
+    cout<<"Overall grade :"<<"N/A"<<endl;
+    }
+    else
+    cout<<"Total marks :"<<sum<<endl;
+    cout<<"Current CGPA :"<<gpa(sum)<<endl;
+    cout<<"Overall grade :"<<grade(sum)<<endl;
+    _getch();
+
+
+}
+
+
+16/This function shows the Student Dashboard Menu
+int stuDashM(int id)
+{
+    system("cls");
+    int pos = 1;
+    int keyP = 0;
+    while (keyP != ENTER)
+    {
+        int headerX = borderX + borderWidth / 2 - 10;
+        Colour(5);
+        gotoxy(headerX, borderY + 1);
+        printf("*******    DASHBOARD    ******");
+        gotoxy(headerX, borderY + 2);
+        printf("******   STUDENT HOME  ******");
+        gotoxy(headerX, borderY + 3);
+        printf("******        PAGE       ******");
+
+
+        gotoxy(menuX, menuY + 2);
+        Colour(3);
+        arrowF(1, pos);
+        printf("Profile");
+
+
+        gotoxy(menuX, menuY + 4);
+        Colour(3);
+        arrowF(2, pos);
+        printf("Selected Courses");
+
+
+        gotoxy(menuX, menuY + 6);
+        Colour(3);
+        arrowF(3, pos);
+        printf("Rank");
+
+
+        gotoxy(menuX, menuY + 8);
+        Colour(3);
+        arrowF(4, pos);
+        printf("Report Card");
+
+
+        gotoxy(menuX, menuY + 10);
+        Colour(3);
+        arrowF(5, pos);
+        printf("Exit");
+
+
+        keyP = _getch();
+        if (keyP == DOWN)
+        {
+            if (pos == 5)
+                pos = 1;
+            else
+                pos++;
+        }
+        else if (keyP == UP)
+        {
+            if (pos == 1)
+                pos = 5;
+            else
+                pos--;
+        }
+    }
+
+
+    system("cls");
+    return pos;
+}
+
+
+
+
+17/This functions shows the course dashboard menu
+void courseDash(int id)
+{
+    int x;
+    do
+    {
+        x = courseDashM(id);
+        if (x == 1)
+            CourseP(id);
+        else if (x == 2)
+            CourseSC(id);
+         else if(x==3)
+            CourseUp(id);
+        else if (x == 4)
+            CourseRank(id);
+        else if (x == 5)
+            CourseOv(id);
+    } while (x !=6);
+}
+
+
+
+
+18/This function shows the enrolled students
+void CourseSC(int id)
+{
+    COURSE temp=course_hash[id];
+    cout<<id<<endl;
+    cout<<"Enrolled Students :"<<endl;
+    if(temp.stc.size()==0)
+    {
+        cout<<"No students Enrolled So Far..."<<endl;
+        _getch();
+        return;
+    }
+    for(auto u:temp.stc)
+    {
+
+
+        cout<<u.sid <<" "<<u.name;
+    }
+    _getch();
+}
+
+
+
+
+19/This function shows the course profile
+void CourseP(int id)
+{
+    COURSE u=course_hash[id];
+    cout<<u.cid<<" "<<u.name<<" "<<u.credit<<endl;
+    _getch();
+}
+
+
+20/This functions shows the Course Overview
+void CourseRank(int id)
+{
+    COURSE temp=course_hash[id];
+    cout<<"Enrolled Students :"<<endl;
+    if(temp.stc.size()==0)
+    {
+        cout<<"No students Enrolled to provide Rank"<<endl;
+        _getch();
+        return;
+    }
+    vector<pair<int,int>>vpp;
+    for(int i=0;i<temp.stc.size();i++)
+    {
+        STUDENTS  sk;
+        sk=stu_hash[temp.stc[i].sid];
+
+
+        for(int j=0;j<sk.stcourse.size();j++)
+        {
+            if(sk.stcourse[j].cid==id)
+            {
+                vpp.push_back({sk.stcourse[j].marks,sk.sid});
+            }
+        }
+    }
+    sort(vpp.rbegin(),vpp.rend());
+    for(auto [x,y]:vpp)
+    {
+        cout<<x<<" "<<y<<endl;
+    }
+    _getch();
+}
+
+
+void CourseOv(int id)
+{
+    COURSE temp=course_hash[id];
+    cout<<temp.cid<<" "<<temp.name<<" "<<temp.credit<<endl;
+    cout<<"Enrolled Students :"<<endl;
+    if(temp.stc.size()==0)
+    {
+        cout<<"No students Enrolled So Far..."<<endl;
+        _getch();
+        return;
+    }
+    for(auto u:temp.stc)
+    {
+
+
+        cout<<u.sid <<" "<<u.name;
+
+
+    }
+    _getch();
+}
+
+
+
+
+21/This functions update the result for a certain course
+void CourseUp(int id)
+{
+    COURSE u=course_hash[id];
+    cout<<"Marks updation for :"<<" "<<u.cid<<" "<<u.name<<endl;
+
+
+     for(int i=0;i<stu.size();i++)
+    {
+        int val=0;
+        mergesort(stu[i].stcourse);
+        int j=Binary_search(stu[i].stcourse,u.cid);
+        cout<<"Student "<<stu[i].sid<<" "<<j<<endl;
+        if(j==-2)continue;
+        do{
+        cout<<"Enter the marks for student :"<<endl<<stu[i].sid<<" "<<stu[i].name<<" "<<stu[i].stcourse[j].marks<<endl;
+        cin>>val;
+        if (val>=0 && val<=100)
+            break;
+        else
+        cout<<"Invalid marks.It should be between 0 and 100" << std::endl;
+       }while (true);
+        cout<<"You've entered: "<<val<<endl;
+                stu[i].stcourse[j].marks=val;
+
+
+               UpdateFile(i,stu[i].sid,id,val,j);
+    }
+    _getch();
+}
+
+
+22/This function shows the Course Menu
+int CourseMenu()
+{
+    system("cls");
+    int pos = 1;
+    int keyP = 0;
+    while (keyP != ENTER)
+    {
+        int headerX = borderX + borderWidth / 2 - 10;
+        Colour(5);
+        gotoxy(headerX, borderY + 1);
+        printf("*******        ******");
+        gotoxy(headerX, borderY + 2);
+        printf("******   HOME  *****");
+        gotoxy(headerX, borderY + 3);
+        printf("******         ******");
+
+
+        gotoxy(menuX, menuY + 2);
+        Colour(3);
+        arrowF(1, pos);
+        printf("Login Into the Course");
+
+
+        gotoxy(menuX, menuY + 4);
+        Colour(3);
+        arrowF(2, pos);
+        printf("Exit");
+
+
+        keyP = _getch();
+        if (keyP == DOWN)
+        {
+            if (pos == 2)
+                pos = 1;
+            else
+                pos++;
+        }
+        else if (keyP == UP)
+        {
+            if (pos == 1)
+                pos = 2;
+            else
+                pos--;
+        }
+    }
+
+
+    system("cls");
+    return pos;
+}
+
+
+
+
+23/This function is for Course Registration Process
+void CorReg()
+{
+    updatelastidT();
+    int cid,teach_id;
+    double cr;
+    string nm,tnm;
+    cout<<"Enter course id: ";
+    cin>>cid;
+    if ((course_hash.find(cid) != course_hash.end()))
+    {
+            cout<<"Already Exists"<<endl;
+                _getch();
+                return;
+    }
+    cout<<"Enter course credit: ";
+    cin>>cr;
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout<<"Enter course name: ";
+    getline(cin, nm);
+    cout<<"Enter teacher name: ";
+    getline(cin, tnm);
+    teach_id=lastTid+1;
+    cout<<"Assigned ID for the teacher :"<<teach_id<<endl;
+    string pass;
+    cout<<"Enter a password: ";
+    cin>>pass;
+
+
+    COURSE c;
+    c.cid = cid;
+    c.credit = cr;
+    c.name = nm;
+    c.th.tid=teach_id;
+    c.th.name=tnm;
+    c.th.cid=cid;
+    course.push_back(c);
+    ofstream outfile("mycourse.txt", ios::app);
+    ofstream outTeach("myteach.txt", ios::app);
+    outfile<<c.cid<<" "<<c.credit<<" "<<c.name<<endl;
+    outTeach<<c.th.tid+10<<" "<<pass<<" "<<c.th.cid<<" "<<tnm<<endl;
+    course_hash[cid]=c;
+    outfile.close(); outTeach.close();
+    ofstream outTID("tid.text",ios::app);
+    outTID<<c.th.cid<<endl;
+    outTID.close();
+    cout << "Course added successfully: " << c.cid << " " << tnm<<endl;
+    _getch();
+}
+
+
+24/This function updates the course data from file
+void get_course()
+{
+     ifstream infile,infileT;
+    infile.open("mycourse.txt");infileT.open("myteach.txt");
+    if (infile.is_open())
+    {
+        course.clear();
+        while(true)
+        {
+            COURSE temp;
+            if(!(infile>>temp.cid>>temp.credit))break;
+            infile.ignore();
+            getline(infile,temp.name);
+
+
+            infileT>>temp.th.tid>>temp.th.tpass>>temp.th.cid;
+            infileT.ignore();
+            getline(infileT,temp.th.name);
+            ifstream pqfile;
+            ifstream csfile;
+            string csName="CSE"+to_string(temp.cid)+".txt";
+            csfile.open(csName);
+             if (csfile.is_open())
+            {
+                 STUDENTS st;
+                while (csfile >>st.sid)
+                {
+                    temp.stc.push_back(st);
+                }
+
+
+            }
+             csfile.close();
+             course_hash[temp.cid]=temp;
+             course.push_back(temp);
+        }
+
+
+    }
+     infile.close();
+
+
+
+
+
+
+        //_getch();
+}
+25/This function shows the current courses 
+void shCR()
+{
+    cout<<"Current Existing courses"<<endl;
+    for(int i=0;i<course.size();i++)
+    {
+        cout<<"Course ID: "<<course[i].cid<<" "<<"Course Name: "<<" "<<course[i].name<<" "<<"Total Students: "<<course[i].stc.size()<<endl;
+    }
+    _getch();
+}
+
+
+26/This courses show the Admin dashboard menu
+nt AdminMM()
+{
+     system("cls");
+    int pos = 1;
+    int keyP = 0;
+    while (keyP != ENTER)
+    {
+        int headerX = borderX + borderWidth / 2 - 10;
+        Colour(5);
+        gotoxy(headerX, borderY + 1);
+        printf("*******        ******");
+        gotoxy(headerX, borderY + 2);
+        printf("******   Admin  *****");
+        gotoxy(headerX, borderY + 3);
+        printf("******         ******");
+
+
+        gotoxy(menuX, menuY + 2);
+        Colour(3);
+        arrowF(1, pos);
+        printf("Course Registration");
+
+
+         gotoxy(menuX, menuY + 4);
+        Colour(3);
+        arrowF(2, pos);
+        printf("Show Existing Courses");
+
+
+        gotoxy(menuX, menuY + 6);
+        Colour(3);
+        arrowF(3, pos);
+        printf("Exit");
+
+
+        keyP = _getch();
+        if (keyP == DOWN)
+        {
+            if (pos == 3)
+                pos = 1;
+            else
+                pos++;
+        }
+        else if (keyP == UP)
+        {
+            if (pos == 1)
+                pos = 3;
+            else
+                pos--;
+        }
+    }
+    _getch();
+    system("cls");
+    return pos;
+}
+
+
+27/This function tells what the project is all about
+void About()
+{
+    cout<<"It is a Student Report Card System"<<endl;
+    _getch();
+}
+
+
+28/This function expresses the Credits the Project
+oid Credit()
+{
+    cout<<"Jillur Rahman Riyad - C231019 - 3AM -CSE"<<endl;
+    cout<<"Aftakil Hossain Fahim -C231034 - 3AM -CSE"<<endl;
+    cout<<"Mohammad Nazim Uddin - C231020 - 3AM -CSE"<<endl;
+    _getch();
+}
